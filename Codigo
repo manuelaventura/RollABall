@@ -1,0 +1,97 @@
+///JugadorController
+
+using UnityEngine;
+using UnityEngine.UI;
+
+public class JugadorController : MonoBehaviour
+{
+    private Rigidbody rb;
+    public float velocidad = 10f;
+
+    private int contador;
+    public UnityEngine.UI.Text textoContador;
+    public UnityEngine.UI.Text textoGanar;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        contador = 0;
+
+        ActualizarTexto();
+
+        if (textoGanar != null)
+            textoGanar.text = "";
+    }
+
+    void FixedUpdate()
+    {
+        float movimientoH = Input.GetAxis("Horizontal");
+        float movimientoV = Input.GetAxis("Vertical");
+
+        Vector3 movimiento = new Vector3(movimientoH, 0.0f, movimientoV);
+        rb.AddForce(movimiento * velocidad);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Coleccionable"))
+        {
+            other.gameObject.SetActive(false);
+            contador++;
+            ActualizarTexto();
+        }
+    }
+
+    void ActualizarTexto()
+    {
+        if (textoContador != null)
+            textoContador.text = "Contador: " + contador;
+
+        if (contador >= 12 && textoGanar != null)
+            textoGanar.text = "¡Ganaste!";
+    }
+}
+
+
+/////CameraController
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CamaraController : MonoBehaviour
+{
+    // Referencia a nuestro jugador
+    public GameObject jugador;
+
+    // Para registrar la diferencia entre la posición de la cámara y la del jugador
+    private Vector3 offset;
+
+    // Se ejecuta al iniciar el juego
+    void Start()
+    {
+        // Calcula la diferencia inicial entre cámara y jugador
+        offset = transform.position - jugador.transform.position;
+    }
+
+    // Se ejecuta cada frame, después de que todo se ha procesado
+    void LateUpdate()
+    {
+        // Mantiene la cámara en la misma posición relativa al jugador
+        transform.position = jugador.transform.position + offset;
+    }
+}
+
+
+///PickupRotar
+
+using UnityEngine;
+
+public class PickupRotar : MonoBehaviour
+{
+    void Update()
+    {
+        transform.Rotate(new Vector3(15, 30, 45) * Time.deltaTime);
+    }
+}
+
